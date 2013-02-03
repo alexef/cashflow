@@ -1,3 +1,5 @@
+import calendar
+import datetime
 from google.appengine.ext import db
 from models import Transaction, Wallet, Category, get_account_ancestor
 from base import AuthenticatedBaseHandler
@@ -19,13 +21,26 @@ class MainPage(MainHandler):
 
 class WalletTransactions(MainHandler):
     def get(self, id):
+        today = datetime.date.today()
+        date_start = self.request.GET.get('start', None)
+        if date_start:
+            date_start = datetime.datetime.strptime(date_start, '%Y-%m-%d').date()
+        else:
+            date_start = datetime.date(today.year, today.month, 1)
+        date_end = self.request.GET.get('end', None)
+        if date_end:
+            date_end = datetime.datetime.strptime(date_end, '%Y-%m-%d').date()
+        else:
+            date_end = datetime.date(today.year, today.month, calendar.monthrange(today.year, today.month)[1])
         wallet = Wallet.get_by_id(int(id), parent=self.get_parent())
-        template_values = {'transactions': wallet.transaction_set,
+        transactions = wallet.transaction_set.filter('date >=', date_start).filter('date <=', date_end)
+        template_values = {'transactions': transactions,
                            'wallets': Wallet.all().ancestor(self.get_parent()),
                            'wallet': wallet,
+                           'interval': (date_start, date_end),
                            'categories': Category.all().ancestor(self.get_parent()),
                            'balance': sum([t.amount for t in wallet.transaction_set]),
-                           }
+        }
         self.render_to_response('wallet.html', template_values)
 
 
@@ -63,8 +78,8 @@ class TransactionAdd(MainHandler):
         category_object = Category.gql("WHERE name = :1", category).get()
         wallet_object = Wallet.gql("WHERE name = :1", wallet).get()
         transaction = Transaction(amount=amount, category=category_object,
-                                  wallet=wallet_object, description=description,
-                                  parent=self.get_parent())
+            wallet=wallet_object, description=description,
+            parent=self.get_parent())
         transaction.put()
         self.redirect('/')
 
