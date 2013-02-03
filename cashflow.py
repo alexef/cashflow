@@ -3,28 +3,7 @@ import webapp2
 import jinja2
 from google.appengine.ext import db
 from google.appengine.api import users
-
-jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), 'templates')))
-jinja_environment.globals.update(
-    {'uri_for': webapp2.uri_for, 'logout_url': users.create_logout_url('/'), 'user': users.get_current_user}
-)
-
-
-class Category(db.Model):
-    name = db.StringProperty()
-
-
-class Wallet(db.Model):
-    name = db.StringProperty()
-
-
-class Transaction(db.Model):
-    date = db.DateTimeProperty(auto_now_add=True)
-    amount = db.IntegerProperty()
-    category = db.ReferenceProperty(Category)
-    wallet = db.ReferenceProperty(Wallet)
-    source = db.ReferenceProperty(Wallet, collection_name='transfers')
-    description = db.StringProperty()
+from models import Category, Wallet, Transaction
 
 
 def get_account_ancestor(user):
@@ -173,7 +152,10 @@ class CategoryDeletePage(webapp2.RequestHandler):
             category.delete()
         self.redirect(webapp2.uri_for('categories'))
 
-
+jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), 'templates')))
+jinja_environment.globals.update(
+    {'uri_for': webapp2.uri_for, 'logout_url': users.create_logout_url('/'), 'user': users.get_current_user}
+)
 
 app = webapp2.WSGIApplication([
      webapp2.Route(r'/', handler=MainPage, name='home'),
