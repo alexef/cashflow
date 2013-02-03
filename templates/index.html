@@ -16,7 +16,7 @@
     <p>Select wallet:</p>
     <ul>
         {% for w in wallets %}
-        <li><a href="{{ uri_for('wallet', id=w.key().id()) }}">{{ w.name }}</a></li>
+        <li><a href="{{ uri_for('wallet', id=w.id) }}">{{ w.name }}</a></li>
         {% endfor %}
     </ul>
 
@@ -40,7 +40,7 @@
             <td>{{ t.category.name }}</td>
             <td>{{ t.wallet.name }}</td>
             <td>{{ t.description }}</td>
-            <td><a href="{{ uri_for('transaction-del', id=t.key().id()) }}">del</a></td>
+            <td><a href="{{ uri_for('transaction-del', id=t.id) }}">del</a></td>
         </tr>
         {% endfor %}
     </table>
@@ -55,7 +55,7 @@
     </select>
         Wallet: <select name="wallet">
         {% for w in wallets %}
-        <option value="{{ w.key().id() }}">{{ w.name }}</option>
+        <option value="{{ w.id }}">{{ w.name }}</option>
         {% endfor %}
     </select>
         Description: <input type="text" name="description"/>

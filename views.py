@@ -34,7 +34,7 @@ class WalletTransactionAdd(AuthenticatedBaseHandler):
         transaction = Transaction(amount=amount, category=category_object, description=description,
             wallet=wallet, parent=get_account_ancestor(self.user))
         transaction.put()
-        self.redirect(self.uri_for('wallet', id=wallet.key().id()))
+        self.redirect(self.uri_for('wallet', id=wallet.id))
 
 
 class WalletsPage(AuthenticatedBaseHandler):

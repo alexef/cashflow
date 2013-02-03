@@ -1,15 +1,21 @@
 from google.appengine.ext import db
 
 
-class Wallet(db.Model):
+class BaseModel(db.Model):
+    @property
+    def id(self):
+        return self.key().id()
+
+
+class Wallet(BaseModel):
     name = db.StringProperty()
 
 
-class Category(db.Model):
+class Category(BaseModel):
     name = db.StringProperty()
 
 
-class Transaction(db.Model):
+class Transaction(BaseModel):
     date = db.DateTimeProperty(auto_now_add=True)
     amount = db.IntegerProperty()
     category = db.ReferenceProperty(Category)
