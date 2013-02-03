@@ -5,6 +5,7 @@
 <body>
     <h1>CashFlow</h1>
 
+    Hello, {{ user() }} <a href="{{ logout_url }}">Log out</a>
     <ul>
         <li><a href="{{ uri_for('home') }}">Home</a></li>
         <li><a href="{{ uri_for('categories') }}">Categories</a></li>

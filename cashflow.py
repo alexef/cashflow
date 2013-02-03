@@ -2,11 +2,11 @@ import os
 import webapp2
 import jinja2
 from google.appengine.ext import db
-#from google.appengine.api import users
+from google.appengine.api import users
 
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
 jinja_environment.globals.update(
-    {'uri_for': webapp2.uri_for}
+    {'uri_for': webapp2.uri_for, 'logout_url': users.create_logout_url('/'), 'user': users.get_current_user}
 )
 
 
@@ -21,11 +21,18 @@ class Transaction(db.Model):
     description = db.StringProperty()
 
 
+def get_account_ancestor(user):
+    return db.Key.from_path('Account', user.nickname())
+
+
 class MainPage(webapp2.RequestHandler):
     def get(self):
-        transactions = Transaction.all().order('-date')
+        user = users.get_current_user()
+        if user is None:
+            return self.redirect(users.create_login_url(self.request.uri))
+        transactions = Transaction.all().ancestor(get_account_ancestor(user)).order('-date')
         balance = sum([t.amount for t in transactions])
-        template_values = {'transactions': transactions, 'categories': Category.all(),
+        template_values = {'transactions': transactions, 'categories': Category.all().ancestor(get_account_ancestor(user)),
                            'balance': balance}
         template = jinja_environment.get_template('index.html')
         self.response.out.write(template.render(template_values))
@@ -33,11 +40,14 @@ class MainPage(webapp2.RequestHandler):
 
 class AddTransaction(webapp2.RequestHandler):
     def post(self):
+        user = users.get_current_user()
+        if not user:
+            self.redirect(users.create_login_url(self.request.uri))
         amount = int(self.request.get('amount'))
         category = self.request.get('category')
         description = self.request.get('description')
         category_object = Category.gql("WHERE name = :1", category).get()
-        transaction = Transaction(amount=amount, category=category_object, description=description)
+        transaction = Transaction(amount=amount, category=category_object, description=description, parent=get_account_ancestor(user))
         transaction.put()
         self.redirect('/')
 
@@ -57,14 +67,20 @@ class TransactionDelete(webapp2.RequestHandler):
 
 class CategoriesPage(webapp2.RequestHandler):
     def post(self):
+        user = users.get_current_user()
+        if not user:
+            self.redirect(users.create_login_url(self.request.uri))
         name = self.request.get('name')
-        category = Category.gql("WHERE name = :1", name).get()
+        category = Category.gql("WHERE ANCESTOR IS :1 AND name = :2", get_account_ancestor(user), name).get()
         if category is None:
-            Category(name=name).put()
+            Category(name=name, parent=get_account_ancestor(user)).put()
         self.get()
 
     def get(self):
-        categories = Category.all()
+        user = users.get_current_user()
+        if not user:
+            self.redirect(users.create_login_url(self.request.uri))
+        categories = Category.all().ancestor(get_account_ancestor(user))
         template_values = {'categories': categories}
         template = jinja_environment.get_template('categories.html')
         self.response.out.write(template.render(template_values))
