@@ -1,10 +1,11 @@
 from google.appengine.ext import db
 
-class Category(db.Model):
+
+class Wallet(db.Model):
     name = db.StringProperty()
 
 
-class Wallet(db.Model):
+class Category(db.Model):
     name = db.StringProperty()
 
 
@@ -15,3 +16,7 @@ class Transaction(db.Model):
     wallet = db.ReferenceProperty(Wallet)
     source = db.ReferenceProperty(Wallet, collection_name='transfers')
     description = db.StringProperty()
+
+
+def get_account_ancestor(user):
+    return db.Key.from_path('Account', user.nickname())
