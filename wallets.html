@@ -1,0 +1,23 @@
+{% extends "index.html" %}
+
+{% block content %}
+    <h2>Add wallet</h2>
+    <form method="post" action="">
+        <input type="text" name="name" />
+        <button type="submit">Add</button>
+    </form>
+
+    <h2>Wallets</h2>
+
+    <table>
+        <tr>
+            <th>Name</th>
+        </tr>
+        {% for w in wallets %}
+        <tr>
+            <td>{{ w.name }}</td>
+            <td><a href="{{ uri_for('wallet', id=w.key().id()) }}">view</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

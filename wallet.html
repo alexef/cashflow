@@ -1,0 +1,47 @@
+{% extends 'index.html' %}
+{% block content %}
+    <p>Select wallet:</p>
+    <ul>
+        {% for w in wallets %}
+            {% if w.key() == wallet.key() %}
+            <li><strong>{{ w.name }}</strong></li>
+            {% else %}
+            <li><a href="{{ uri_for('wallet', id=w.key().id()) }}">{{ w.name }}</a></li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+
+    <p>
+        Balance: {{ balance }}
+    </p>
+    <h2>Add transaction</h2>
+    <form method="post" action="{{ uri_for('wallet-transaction-add', id=wallet.key().id()) }}">
+        Amount: <input type="text" name="amount" />
+        Category: <select name="category">
+                    {% for c in categories %}
+                    <option>{{ c.name }}</option>
+                    {% endfor %}
+                  </select>
+        Description: <input type="text" name="description"/>
+        <button type="submit">Add</button>
+    </form>
+
+    <h2>Transactions</h2>
+    <table>
+        <tr>
+            <th>Date</th>
+            <th>Amount</th>
+            <th>Category</th>
+            <th>Description</th>
+        </tr>
+        {% for t in transactions %}
+        <tr>
+            <td>{{ t.date.date() }}</td>
+            <td>{{ t.amount }}</td>
+            <td>{{ t.category.name }}</td>
+            <td>{{ t.description }}</td>
+            <td><a href="{{ uri_for('transaction-del', id=t.key().id()) }}">del</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

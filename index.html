@@ -9,23 +9,20 @@
     <ul>
         <li><a href="{{ uri_for('home') }}">Home</a></li>
         <li><a href="{{ uri_for('categories') }}">Categories</a></li>
+        <li><a href="{{ uri_for('wallets') }}">Wallets</a></li>
     </ul>
 
     {% block content %}
+    <p>Select wallet:</p>
+    <ul>
+        {% for w in wallets %}
+        <li><a href="{{ uri_for('wallet', id=w.key().id()) }}">{{ w.name }}</a></li>
+        {% endfor %}
+    </ul>
+
     <p>
-        Balance: {{ balance }}
+        Global balance: {{ balance }}
     </p>
-    <h2>Add transaction</h2>
-    <form method="post" action="/add">
-        Amount: <input type="text" name="amount" />
-        Category: <select name="category">
-                    {% for c in categories %}
-                    <option>{{ c.name }}</option>
-                    {% endfor %}
-                  </select>
-        Description: <input type="text" name="description"/>
-        <button type="submit">Add</button>
-    </form>
 
     <h2>Transactions</h2>
     <table>
@@ -33,6 +30,7 @@
             <th>Date</th>
             <th>Amount</th>
             <th>Category</th>
+            <th>Wallet</th>
             <th>Description</th>
         </tr>
         {% for t in transactions %}
@@ -40,11 +38,29 @@
             <td>{{ t.date.date() }}</td>
             <td>{{ t.amount }}</td>
             <td>{{ t.category.name }}</td>
+            <td>{{ t.wallet.name }}</td>
             <td>{{ t.description }}</td>
             <td><a href="{{ uri_for('transaction-del', id=t.key().id()) }}">del</a></td>
         </tr>
         {% endfor %}
     </table>
+
+    <h2>Add transaction</h2>
+    <form method="post" action="/add">
+        Amount: <input type="text" name="amount" />
+        Category: <select name="category">
+        {% for c in categories %}
+        <option>{{ c.name }}</option>
+        {% endfor %}
+    </select>
+        Wallet: <select name="wallet">
+        {% for w in wallets %}
+        <option value="{{ w.key().id() }}">{{ w.name }}</option>
+        {% endfor %}
+    </select>
+        Description: <input type="text" name="description"/>
+        <button type="submit">Add</button>
+    </form>
     {% endblock %}
 </body>
 </html>

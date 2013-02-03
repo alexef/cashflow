@@ -14,10 +14,16 @@ class Category(db.Model):
     name = db.StringProperty()
 
 
+class Wallet(db.Model):
+    name = db.StringProperty()
+
+
 class Transaction(db.Model):
     date = db.DateTimeProperty(auto_now_add=True)
     amount = db.IntegerProperty()
     category = db.ReferenceProperty(Category)
+    wallet = db.ReferenceProperty(Wallet)
+    source = db.ReferenceProperty(Wallet, collection_name='transfers')
     description = db.StringProperty()
 
 
@@ -33,9 +39,60 @@ class MainPage(webapp2.RequestHandler):
         transactions = Transaction.all().ancestor(get_account_ancestor(user)).order('-date')
         balance = sum([t.amount for t in transactions])
         template_values = {'transactions': transactions, 'categories': Category.all().ancestor(get_account_ancestor(user)),
-                           'balance': balance}
+                           'balance': balance, 'wallets': Wallet.all().ancestor(get_account_ancestor(user))}
         template = jinja_environment.get_template('index.html')
         self.response.out.write(template.render(template_values))
+
+
+class WalletTransactions(webapp2.RequestHandler):
+    def get(self, id):
+        user = users.get_current_user()
+        if user is None:
+            return self.redirect(users.create_login_url(self.request.uri))
+        wallet = Wallet.get_by_id(int(id), parent=get_account_ancestor(user))
+        template_values = {'transactions': wallet.transaction_set,
+                           'wallets': Wallet.all().ancestor(get_account_ancestor(user)),
+                           'wallet': wallet,
+                           'categories': Category.all().ancestor(get_account_ancestor(user)),
+                           'balance': sum([t.amount for t in wallet.transaction_set]),
+        }
+        template = jinja_environment.get_template('wallet.html')
+        self.response.out.write(template.render(template_values))
+
+
+class WalletTransactionAdd(webapp2.RequestHandler):
+    def post(self, id):
+        user = users.get_current_user()
+        if user is None:
+            return self.redirect(users.create_login_url(self.request.uri))
+        wallet = Wallet.get_by_id(int(id), parent=get_account_ancestor(user))
+        amount = int(self.request.get('amount'))
+        category = self.request.get('category')
+        description = self.request.get('description')
+        category_object = Category.gql("WHERE name = :1", category).get()
+        transaction = Transaction(amount=amount, category=category_object, description=description,
+                                  wallet=wallet, parent=get_account_ancestor(user))
+        transaction.put()
+        self.redirect(self.uri_for('wallet', id=wallet.key().id()))
+
+
+class WalletsPage(webapp2.RequestHandler):
+    def get(self):
+        user = users.get_current_user()
+        if user is None:
+            return self.redirect(users.create_login_url(self.request.uri))
+        template = jinja_environment.get_template('wallets.html')
+        self.response.out.write(template.render({'wallets': Wallet.all().ancestor(get_account_ancestor(user))}))
+
+    def post(self):
+        user = users.get_current_user()
+        if not user:
+            self.redirect(users.create_login_url(self.request.uri))
+        name = self.request.get('name')
+        wallet = Wallet.all().ancestor(get_account_ancestor(user)).filter('name', name).get()
+        if wallet is None:
+            Wallet(name=name, parent=get_account_ancestor(user)).put()
+        self.get()
 
 
 class AddTransaction(webapp2.RequestHandler):
@@ -118,9 +175,12 @@ class CategoryDeletePage(webapp2.RequestHandler):
 
 
 
-app = webapp2.WSGIApplication(
-    [webapp2.Route(r'/', handler=MainPage, name='home'),
-     webapp2.Route(r'/add', handler=AddTransaction, name='transaction-add'),
+app = webapp2.WSGIApplication([
+     webapp2.Route(r'/', handler=MainPage, name='home'),
+     webapp2.Route(r'/wallet/', handler=WalletsPage, name='wallets'),
+     webapp2.Route(r'/wallet/<id:\d+>/', handler=WalletTransactions, name='wallet'),
+     webapp2.Route(r'/wallet/<id:\d+>/transaction/add/', handler=WalletTransactionAdd, name='wallet-transaction-add'),
+     webapp2.Route(r'/transaction/add/', handler=AddTransaction, name='transaction-add'),
      webapp2.Route(r'/transaction/<id:\d+>/delete/', handler=TransactionDelete, name='transaction-del'),
      webapp2.Route(r'/categories', handler=CategoriesPage, name='categories'),
      webapp2.Route(r'/categories/<category:[^/]+>/', handler=CategoryPage, name='category'),
