@@ -4,7 +4,7 @@ import jinja2
 from google.appengine.ext import db
 from google.appengine.api import users
 
-jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
+jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), 'templates')))
 jinja_environment.globals.update(
     {'uri_for': webapp2.uri_for, 'logout_url': users.create_logout_url('/'), 'user': users.get_current_user}
 )
