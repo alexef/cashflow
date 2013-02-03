@@ -40,6 +40,7 @@
             <td>{{ t.amount }}</td>
             <td>{{ t.category.name }}</td>
             <td>{{ t.description }}</td>
+            <td><a href="{{ uri_for('transaction-del', id=t.key().id()) }}">del</a></td>
         </tr>
         {% endfor %}
     </table>

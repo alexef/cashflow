@@ -42,6 +42,19 @@ class AddTransaction(webapp2.RequestHandler):
         self.redirect('/')
 
 
+class TransactionDelete(webapp2.RequestHandler):
+    def get(self, id):
+        transaction = Transaction.get_by_id(int(id))
+        template_values = {'object': transaction}
+        template = jinja_environment.get_template('delete.html')
+        self.response.out.write(template.render(template_values))
+
+    def post(self, id):
+        transaction = Transaction.get_by_id(int(id))
+        transaction.delete()
+        self.redirect(webapp2.uri_for('home'))
+
+
 class CategoriesPage(webapp2.RequestHandler):
     def post(self):
         name = self.request.get('name')
@@ -92,6 +105,7 @@ class CategoryDeletePage(webapp2.RequestHandler):
 app = webapp2.WSGIApplication(
     [webapp2.Route(r'/', handler=MainPage, name='home'),
      webapp2.Route(r'/add', handler=AddTransaction, name='transaction-add'),
+     webapp2.Route(r'/transaction/<id:\d+>/delete/', handler=TransactionDelete, name='transaction-del'),
      webapp2.Route(r'/categories', handler=CategoriesPage, name='categories'),
      webapp2.Route(r'/categories/<category:[^/]+>/', handler=CategoryPage, name='category'),
      webapp2.Route(r'/categories/<category:[^/]+>/delete/', handler=CategoryDeletePage, name='category-del'),
