@@ -1,0 +1,28 @@
+{% extends "index.html" %}
+
+{% block content %}
+    <h2>Add category</h2>
+    <form method="post" action="">
+        <input type="text" name="name" />
+        <button type="submit">Add</button>
+    </form>
+
+    <h2>Categories</h2>
+
+    <table>
+        <tr>
+            <th>Name</th>
+        </tr>
+        {% for c in categories %}
+        <tr>
+            <td>{{ c.name }}</td>
+            <td>
+                <a href="{{ uri_for('category', category=c.name) }}">view</a>
+            </td>
+            <td>
+                <a href="{{ uri_for('category-del', category=c.name) }}">del</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

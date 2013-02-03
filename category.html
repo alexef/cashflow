@@ -1,0 +1,29 @@
+{% extends "index.html" %}
+
+{% block content %}
+    <h2>Category: {{ category.name }}</h2>
+
+    <form action="" method="post">
+        Rename: <input type="text" name="name" value="{{ category.name }}" />
+        <button type="submit">Rename</button>
+    </form>
+
+    <h2>Transactions</h2>
+
+    <table>
+    <tr>
+        <th>Date</th>
+        <th>Amount</th>
+        <th>Category</th>
+        <th>Description</th>
+    </tr>
+    {% for t in transactions %}
+    <tr>
+        <td>{{ t.date.date() }}</td>
+        <td>{{ t.amount }}</td>
+        <td>{{ t.category.name }}</td>
+        <td>{{ t.description }}</td>
+    </tr>
+    {% endfor %}
+    </table>
+{% endblock %}

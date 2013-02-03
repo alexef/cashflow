@@ -1,0 +1,48 @@
+<html>
+<head>
+    <title>{% block title %}CashFlow{% endblock %}</title>
+</head>
+<body>
+    <h1>CashFlow</h1>
+
+    <ul>
+        <li><a href="{{ uri_for('home') }}">Home</a></li>
+        <li><a href="{{ uri_for('categories') }}">Categories</a></li>
+    </ul>
+
+    {% block content %}
+    <p>
+        Balance: {{ balance }}
+    </p>
+    <h2>Add transaction</h2>
+    <form method="post" action="/add">
+        Amount: <input type="text" name="amount" />
+        Category: <select name="category">
+                    {% for c in categories %}
+                    <option>{{ c.name }}</option>
+                    {% endfor %}
+                  </select>
+        Description: <input type="text" name="description"/>
+        <button type="submit">Add</button>
+    </form>
+
+    <h2>Transactions</h2>
+    <table>
+        <tr>
+            <th>Date</th>
+            <th>Amount</th>
+            <th>Category</th>
+            <th>Description</th>
+        </tr>
+        {% for t in transactions %}
+        <tr>
+            <td>{{ t.date.date() }}</td>
+            <td>{{ t.amount }}</td>
+            <td>{{ t.category.name }}</td>
+            <td>{{ t.description }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endblock %}
+</body>
+</html>
