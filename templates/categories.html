@@ -17,10 +17,10 @@
         <tr>
             <td>{{ c.name }}</td>
             <td>
-                <a href="{{ uri_for('category', category=c.name) }}">view</a>
+                <a href="{{ uri_for('category', id=c.id) }}">view</a>
             </td>
             <td>
-                <a href="{{ uri_for('category-del', category=c.name) }}">del</a>
+                <a href="{{ uri_for('category-del', id=c.id) }}">del</a>
             </td>
         </tr>
         {% endfor %}

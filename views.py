@@ -87,18 +87,18 @@ class CategoriesPage(AuthenticatedBaseHandler):
 
 
 class CategoryPage(AuthenticatedBaseHandler):
-    def get(self, category):
-        category = Category.gql("WHERE name = :1", category).get()
+    def get(self, id):
+        category = Category.get_by_id(int(id), parent=get_account_ancestor(self.user))
         transactions = Transaction.gql("WHERE category = :1", category)
         template_values = {'category': category, 'transactions': transactions}
         self.render_to_response('category.html', template_values)
 
-    def post(self, category):
-        category = Category.gql("WHERE name = :1", category).get()
+    def post(self, id):
+        category = Category.get_by_id(int(id), parent=get_account_ancestor(self.user))
         if category:
             category.name = self.request.get('name')
             category.put()
-        self.redirect(self.uri_for('category', category=category.name))
+        self.redirect(self.uri_for('category', id=category.id))
 
 
 class CategoryDeletePage(AuthenticatedBaseHandler):

@@ -15,8 +15,8 @@ url_mappings = (
     webapp2.Route(r'/transaction/add/', handler=AddTransaction, name='transaction-add'),
     webapp2.Route(r'/transaction/<id:\d+>/delete/', handler=TransactionDelete, name='transaction-del'),
     webapp2.Route(r'/categories', handler=CategoriesPage, name='categories'),
-    webapp2.Route(r'/categories/<category:[^/]+>/', handler=CategoryPage, name='category'),
-    webapp2.Route(r'/categories/<category:[^/]+>/delete/', handler=CategoryDeletePage, name='category-del'),
+    webapp2.Route(r'/categories/<id:\d+>/', handler=CategoryPage, name='category'),
+    webapp2.Route(r'/categories/<id:\d+>/delete/', handler=CategoryDeletePage, name='category-del'),
 )
 
 app = webapp2.WSGIApplication(url_mappings,  debug=True)
