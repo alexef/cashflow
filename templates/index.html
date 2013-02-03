@@ -46,7 +46,7 @@
     </table>
 
     <h2>Add transaction</h2>
-    <form method="post" action="/add">
+    <form method="post" action="{{ uri_for('transaction-add') }}">
         Amount: <input type="text" name="amount" />
         Category: <select name="category">
         {% for c in categories %}
