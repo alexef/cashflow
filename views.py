@@ -92,13 +92,14 @@ class TransactionAdd(MainHandler):
 
 class TransactionDelete(MainHandler):
     def get(self, id):
-        transaction = Transaction.get_by_id(int(id))
+        transaction = Transaction.get_by_id(int(id), parent=self.get_parent())
         template_values = {'object': transaction}
         self.render_to_response('delete.html', template_values)
 
     def post(self, id):
-        transaction = Transaction.get_by_id(int(id))
-        transaction.delete()
+        transaction = Transaction.get_by_id(int(id), parent=self.get_parent())
+        if transaction:
+            transaction.delete()
         self.redirect(self.uri_for('home'))
 
 
