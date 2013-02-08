@@ -19,11 +19,6 @@
 <div class="navbar navbar-inverse navbar-fixed-top">
     <div class="navbar-inner">
         <div class="container">
-            <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
             <a class="brand" href="{{ uri_for('home') }}">CashFlow</a>
             <div class="nav-collapse collapse">
                 <p class="navbar-text pull-right">{{ user() }}, <a href="{{ logout_url }}">log out</a></p>
@@ -35,6 +30,7 @@
                         <ul class="dropdown-menu">
                             <li><a href="{{ uri_for('import') }}">Import</a></li>
                             <li><a href="{{ uri_for('tools-flush') }}">Flush</a></li>
+                            <li><a href="{{ uri_for('overview') }}">Overview</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -104,7 +100,7 @@
 <script src="/static/js/bootstrap.min.js"></script>
 {% block extrafooter %}
 <script>
-    $('#nv-home').addClass('active');
+    $('#nv-tool').addClass('active');
 </script>
 {% endblock %}
 </body>

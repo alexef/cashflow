@@ -8,7 +8,8 @@ from base import jinja_environment
 jinja_environment.loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), 'templates'))
 
 url_mappings = (
-    webapp2.Route(r'/', handler=MainPage, name='home'),
+    webapp2.Route(r'/', handler=HomeRedirect, name='home'),
+    webapp2.Route(r'/overview/', handler=MainPage, name='overview'),
     webapp2.Route(r'/wallet/', handler=WalletsPage, name='wallets'),
     webapp2.Route(r'/wallet/<id:\d+>/', handler=WalletTransactions, name='wallet'),
     webapp2.Route(r'/wallet/<id:\d+>/transaction/add/', handler=WalletTransactionAdd, name='wallet-transaction-add'),

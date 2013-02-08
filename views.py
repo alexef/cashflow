@@ -13,6 +13,15 @@ class MainHandler(AuthenticatedBaseHandler):
         return get_account_ancestor(self.user)
 
 
+class HomeRedirect(MainHandler):
+    def get(self):
+        wallet = Wallet.all().ancestor(self.get_parent()).order('name').get()
+        if wallet is None:
+            self.redirect(self.uri_for('wallets'))
+        else:
+            self.redirect(self.uri_for('wallet', id=wallet.id))
+
+
 class MainPage(MainHandler):
     def get(self):
         ts = Transaction.all().ancestor(self.get_parent())
