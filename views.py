@@ -12,7 +12,7 @@ class MainHandler(AuthenticatedBaseHandler):
 
 class MainPage(MainHandler):
     def get(self):
-        transactions = Transaction.all().ancestor(self.get_parent()).order('-date')
+        transactions = Transaction.all().ancestor(self.get_parent()).order('-date').fetch(100)
         balance = sum([t.amount for t in transactions])
         template_values = {'transactions': transactions, 'categories': Category.all().ancestor(self.get_parent()),
                            'balance': balance, 'wallets': Wallet.all().ancestor(self.get_parent())}
