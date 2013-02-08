@@ -17,7 +17,7 @@ class Category(BaseModel):
 
 class Transaction(BaseModel):
     date = db.DateTimeProperty(auto_now_add=True)
-    amount = db.IntegerProperty()
+    amount = db.FloatProperty()
     category = db.ReferenceProperty(Category)
     wallet = db.ReferenceProperty(Wallet)
     source = db.ReferenceProperty(Wallet, collection_name='transfers')
