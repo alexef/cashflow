@@ -1,72 +1,106 @@
+<!DOCTYPE html>
 <html>
 <head>
     <title>{% block title %}CashFlow{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap -->
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <style>
+          body {
+            padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+          }
+          .table-nofluid {
+              width: auto;
+          }
+    </style>
 </head>
+
 <body>
-    <h1>CashFlow</h1>
+<div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container">
+            <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <span class="brand" href="#">Cashflow</span>
+            <div class="nav-collapse collapse">
+                <p class="navbar-text pull-right">{{ user() }}, <a href="{{ logout_url }}">log out</a></p>
+                <ul class="nav">
+                    <li><a href="{{ uri_for('home') }}">Home</a></li>
+                    <li><a href="{{ uri_for('categories') }}">Categories</a></li>
+                    <li><a href="{{ uri_for('wallets') }}">Wallets</a></li>
+                    <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Tools</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{{ uri_for('import') }}">Import</a></li>
+                            <li><a href="{{ uri_for('tools-flush') }}">Flush</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
 
-    Hello, {{ user() }} <a href="{{ logout_url }}">Log out</a>
-    <ul>
-        <li><a href="{{ uri_for('home') }}">Home</a></li>
-        <li><a href="{{ uri_for('categories') }}">Categories</a></li>
-        <li><a href="{{ uri_for('wallets') }}">Wallets</a></li>
-        <li><a href="#">Tools</a>
-            <ul>
-                <li><a href="{{ uri_for('import') }}">Import</a></li>
-                <li><a href="{{ uri_for('tools-flush') }}">Flush</a></li>
-            </ul>
-        </li>
-    </ul>
-
+<div class="container">
     {% block content %}
-    <p>Select wallet:</p>
-    <ul>
-        {% for w in wallets %}
-        <li><a href="{{ uri_for('wallet', id=w.id) }}">{{ w.name }}</a></li>
-        {% endfor %}
-    </ul>
+        <h2>Wallet</h2>
+        <p>Select wallet:</p>
+        <ul>
+            {% for w in wallets %}
+                <li><a href="{{ uri_for('wallet', id=w.id) }}">{{ w.name }}</a></li>
+            {% endfor %}
+        </ul>
 
-    <p>
-        Global balance: {{ balance }}
-    </p>
+        <p>
+            Global balance: {{ balance }}
+        </p>
 
-    <h2>Transactions</h2>
-    <table>
-        <tr>
-            <th>Date</th>
-            <th>Amount</th>
-            <th>Category</th>
-            <th>Wallet</th>
-            <th>Description</th>
-        </tr>
-        {% for t in transactions %}
-        <tr>
-            <td>{{ t.date.date() }}</td>
-            <td>{{ t.amount }}</td>
-            <td>{{ t.category.name }}</td>
-            <td>{{ t.wallet.name }}</td>
-            <td>{{ t.description }}</td>
-            <td><a href="{{ uri_for('transaction-del', id=t.id) }}">del</a></td>
-        </tr>
-        {% endfor %}
-    </table>
+        <h2>Transactions</h2>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Category</th>
+                <th>Wallet</th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for t in transactions %}
+                <tr>
+                    <td>{{ t.date.date() }}</td>
+                    <td>{{ t.amount }}</td>
+                    <td>{{ t.category.name }}</td>
+                    <td>{{ t.wallet.name }}</td>
+                    <td>{{ t.description }}</td>
+                    <td><a href="{{ uri_for('transaction-del', id=t.id) }}">del</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
 
-    <h2>Add transaction</h2>
-    <form method="post" action="{{ uri_for('transaction-add') }}">
-        Amount: <input type="text" name="amount" />
-        Category: <select name="category">
-        {% for c in categories %}
-        <option>{{ c.name }}</option>
-        {% endfor %}
-    </select>
-        Wallet: <select name="wallet">
-        {% for w in wallets %}
-        <option value="{{ w.id }}">{{ w.name }}</option>
-        {% endfor %}
-    </select>
-        Description: <input type="text" name="description"/>
-        <button type="submit">Add</button>
-    </form>
+        <h2>Add transaction</h2>
+        <form method="post" action="{{ uri_for('transaction-add') }}" class="form-inline">
+            Amount: <input type="text" name="amount" class="input-small"/>
+            Category: <select name="category" class="input-small">
+            {% for c in categories %}
+                <option>{{ c.name }}</option>
+            {% endfor %}
+        </select>
+            Wallet: <select name="wallet" class="input-small">
+            {% for w in wallets %}
+                <option value="{{ w.id }}">{{ w.name }}</option>
+            {% endfor %}
+        </select>
+            Description: <input type="text" name="description"/>
+            <button class="btn btn-primary" type="submit">Add</button>
+        </form>
     {% endblock %}
+</div><!-- div class=container -->
+<script src="http://code.jquery.com/jquery.js"></script>
+<script src="/static/js/bootstrap.min.js"></script>
 </body>
 </html>

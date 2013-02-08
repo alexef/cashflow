@@ -1,48 +1,61 @@
 {% extends 'index.html' %}
 {% block content %}
-    <p>Select wallet:</p>
-    <ul>
-        {% for w in wallets %}
-            {% if w.key() == wallet.key() %}
-            <li><strong>{{ w.name }}</strong></li>
-            {% else %}
-            <li><a href="{{ uri_for('wallet', id=w.id) }}">{{ w.name }}</a></li>
-            {% endif %}
-        {% endfor %}
-    </ul>
+    <div class="btn-toolbar">
+        <div class="btn-group">
+            <span class="btn disabled">Balance: <strong class="{% if balance < 0 %}text-error{% else %}text-success{% endif %}">{{ balance }}</strong></span>
+        </div>
+        <div class="btn-group pull-right">
+            <a class="btn btn-inverse dropdown-toggle" data-toggle="dropdown" href="#">
+                {{ wallet.name }}
+                <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu pull-right">
+                {% for w in wallets %}
+                    <li><a href="{{ uri_for('wallet', id=w.id) }}">{{ w.name }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
 
-    <p>
-        Balance: {{ balance }}
-    </p>
-    <h2>Add transaction</h2>
-    <form method="post" action="{{ uri_for('wallet-transaction-add', id=wallet.id) }}">
-        Amount: <input type="text" name="amount" />
-        Category: <select name="category">
-                    {% for c in categories %}
+    <form class="form-inline" method="post" action="{{ uri_for('wallet-transaction-add', id=wallet.id) }}">
+        <fieldset>
+            <legend>Add transaction</legend>
+            <label>Amount:</label>
+            <input type="text" name="amount" placeholder="-50, 100" class="input-small" />
+            <label>Category:</label>
+            <select name="category">
+                {% for c in categories %}
                     <option>{{ c.name }}</option>
-                    {% endfor %}
-                  </select>
-        Description: <input type="text" name="description"/>
-        <button type="submit">Add</button>
+                {% endfor %}
+            </select>
+            <label>Description:</label>
+            <input type="text" name="description" class="input-large" />
+            <button type="submit" class="btn btn-primary">Add</button>
+        </fieldset>
     </form>
 
     <h2>Transactions</h2>
-        <p>Interval: {{ interval.0 }} - {{ interval.1 }}</p>
-    <table>
+    <p>Interval: {{ interval.0 }} - {{ interval.1 }}</p>
+    <table class="table table-striped">
+        <thead>
         <tr>
             <th>Date</th>
             <th>Amount</th>
             <th>Category</th>
             <th>Description</th>
+            <th></th>
         </tr>
+        </thead>
+        <tbody>
         {% for t in transactions %}
-        <tr>
-            <td>{{ t.date.date() }}</td>
-            <td>{{ t.amount }}</td>
-            <td>{{ t.category.name }}</td>
-            <td>{{ t.description }}</td>
-            <td><a href="{{ uri_for('transaction-del', id=t.id) }}">del</a></td>
-        </tr>
+            <tr>
+                <td>{{ t.date.date() }}</td>
+                <td><span class="{% if t.amount < 0 %}text-error{% else %}text-success{% endif %}">{{ t.amount }}</span></td>
+                <td>{{ t.category.name }}</td>
+                <td>{{ t.description }}</td>
+                <td><a class="btn btn-mini btn-danger" href="{{ uri_for('transaction-del', id=t.id) }}"><i class="icon-trash"></i></a></td>
+            </tr>
         {% endfor %}
+        </tbody>
     </table>
 {% endblock %}

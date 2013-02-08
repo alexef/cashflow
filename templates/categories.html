@@ -2,27 +2,34 @@
 
 {% block content %}
     <h2>Add category</h2>
-    <form method="post" action="">
-        <input type="text" name="name" />
-        <button type="submit">Add</button>
+
+    <form method="post" action="" class="form-inline">
+        <input type="text" name="name" placeholder="Unique category name"/>
+        <button type="submit" class="btn btn-primary">Add</button>
     </form>
 
     <h2>Categories</h2>
 
-    <table>
+    <table class="table table-condensed table-striped table-nofluid">
+        <thead>
         <tr>
             <th>Name</th>
+            <th></th>
+            <th></th>
         </tr>
+        </thead>
+        <tbody>
         {% for c in categories %}
         <tr>
             <td>{{ c.name }}</td>
             <td>
-                <a href="{{ uri_for('category', id=c.id) }}">view</a>
+                <a class="btn btn-mini" href="{{ uri_for('category', id=c.id) }}"><i class="icon-th-list"></i> view</a>
             </td>
             <td>
-                <a href="{{ uri_for('category-del', id=c.id) }}">del</a>
+                <a class="btn btn-mini btn-danger" href="{{ uri_for('category-del', id=c.id) }}"><i class="icon-trash"></i></a>
             </td>
         </tr>
         {% endfor %}
+        </tbody>
     </table>
 {% endblock %}

@@ -3,20 +3,23 @@
 {% block content %}
     <h2>Category: {{ category.name }}</h2>
 
-    <form action="" method="post">
+    <form action="" method="post" class="form-inline">
         Rename: <input type="text" name="name" value="{{ category.name }}" />
-        <button type="submit">Rename</button>
+        <button class="btn btn-danger" type="submit">Rename</button>
     </form>
 
     <h2>Transactions</h2>
 
-    <table>
+    <table class="table table-striped">
+    <thead>
     <tr>
         <th>Date</th>
         <th>Amount</th>
         <th>Category</th>
         <th>Description</th>
     </tr>
+    </thead>
+    <tbody>
     {% for t in transactions %}
     <tr>
         <td>{{ t.date.date() }}</td>
@@ -25,5 +28,6 @@
         <td>{{ t.description }}</td>
     </tr>
     {% endfor %}
+    </tbody>
     </table>
 {% endblock %}

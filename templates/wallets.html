@@ -2,22 +2,26 @@
 
 {% block content %}
     <h2>Add wallet</h2>
-    <form method="post" action="">
-        <input type="text" name="name" />
-        <button type="submit">Add</button>
+    <form method="post" action="" class="form-inline">
+        <input type="text" name="name" placeholder="Unique wallet name"/>
+        <button class="btn btn-primary" type="submit">Add</button>
     </form>
 
     <h2>Wallets</h2>
 
-    <table>
+    <table class="table table-condensed table-nofluid">
+        <thead>
         <tr>
             <th>Name</th>
         </tr>
+        </thead>
+        <tbody>
         {% for w in wallets %}
         <tr>
             <td>{{ w.name }}</td>
-            <td><a href="{{ uri_for('wallet', id=w.id) }}">view</a></td>
+            <td><a class="btn btn-mini" href="{{ uri_for('wallet', id=w.id) }}"><i class="icon-th-list"></i> view</a></td>
         </tr>
         {% endfor %}
+        </tbody>
     </table>
 {% endblock %}
