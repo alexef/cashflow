@@ -24,14 +24,14 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <span class="brand" href="#">Cashflow</span>
+            <a class="brand" href="{{ uri_for('home') }}">CashFlow</a>
             <div class="nav-collapse collapse">
                 <p class="navbar-text pull-right">{{ user() }}, <a href="{{ logout_url }}">log out</a></p>
                 <ul class="nav">
-                    <li><a href="{{ uri_for('home') }}">Home</a></li>
-                    <li><a href="{{ uri_for('categories') }}">Categories</a></li>
-                    <li><a href="{{ uri_for('wallets') }}">Wallets</a></li>
-                    <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Tools</a>
+                    <li id="nv-home"><a href="{{ uri_for('home') }}">Home</a></li>
+                    <li id="nv-cat"><a href="{{ uri_for('categories') }}">Categories</a></li>
+                    <li id="nv-wall"><a href="{{ uri_for('wallets') }}">Wallets</a></li>
+                    <li id="nv-tool" class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Tools</a>
                         <ul class="dropdown-menu">
                             <li><a href="{{ uri_for('import') }}">Import</a></li>
                             <li><a href="{{ uri_for('tools-flush') }}">Flush</a></li>
@@ -102,5 +102,10 @@
 </div><!-- div class=container -->
 <script src="http://code.jquery.com/jquery.js"></script>
 <script src="/static/js/bootstrap.min.js"></script>
+{% block extrafooter %}
+<script>
+    $('#nv-home').addClass('active');
+</script>
+{% endblock %}
 </body>
 </html>
