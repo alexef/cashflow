@@ -10,6 +10,11 @@
         <li><a href="{{ uri_for('home') }}">Home</a></li>
         <li><a href="{{ uri_for('categories') }}">Categories</a></li>
         <li><a href="{{ uri_for('wallets') }}">Wallets</a></li>
+        <li><a href="#">Tools</a>
+            <ul>
+                <li><a href="{{ uri_for('import') }}">Import</a></li>
+            </ul>
+        </li>
     </ul>
 
     {% block content %}

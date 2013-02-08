@@ -1,8 +1,11 @@
+from StringIO import StringIO
 import calendar
 import datetime
+from google.appengine.api import urlfetch, taskqueue
 from google.appengine.ext import db
 from models import Transaction, Wallet, Category, get_account_ancestor
 from base import AuthenticatedBaseHandler
+from utils import UnicodeReader
 
 
 class MainHandler(AuthenticatedBaseHandler):
@@ -12,10 +15,13 @@ class MainHandler(AuthenticatedBaseHandler):
 
 class MainPage(MainHandler):
     def get(self):
-        transactions = Transaction.all().ancestor(self.get_parent()).order('-date').fetch(100)
-        balance = sum([t.amount for t in transactions])
+        ts = Transaction.all().ancestor(self.get_parent())
+        base_ts = Transaction.all(projection=('amount',)).ancestor(self.get_parent())
+        balance = sum([t.amount for t in base_ts])
+        transactions = ts.order('-date').fetch(50)
         template_values = {'transactions': transactions, 'categories': Category.all().ancestor(self.get_parent()),
-                           'balance': balance, 'wallets': Wallet.all().ancestor(self.get_parent())}
+                           'balance': balance,
+                           'wallets': Wallet.all().ancestor(self.get_parent())}
         self.render_to_response('index.html', template_values)
 
 
@@ -136,3 +142,63 @@ class CategoryDeletePage(MainHandler):
             db.delete(category.transaction_set)
             category.delete()
         self.redirect(self.uri_for('categories'))
+
+
+class ImportPage(MainHandler):
+    def get(self):
+        self.render_to_response('import.html')
+
+    def post(self):
+        taskqueue.add(url=self.uri_for('import-worker'), params={'user': self.user, 'url': self.request.get('url', None)})
+        self.redirect(self.uri_for('import'))
+
+
+class ImportWorker(MainHandler):
+    def get_current_user(self):
+        name = self.request.get('user')
+        class FakeUser:
+            name = ''
+            def nickname(self):
+                return self.name
+        user = FakeUser()
+        user.name = name
+        return super(ImportWorker, self).get_current_user() or user
+
+    def post(self):
+        url = self.request.get('url', None)
+        # cache cats and ws
+        cats = {}
+        ws = {}
+        for c in Category.all().ancestor(self.get_parent()):
+            cats[c.name] = c
+        for w in Wallet.all().ancestor(self.get_parent()):
+            ws[w.name] = w
+        result = urlfetch.fetch(url)
+        if result.status_code == 200:
+            fin = StringIO(result.content)
+            r = UnicodeReader(fin)
+            r.next()
+
+            for line in r:
+                date, amount, category, description, wallet = line
+                date = datetime.datetime.strptime(date, '%Y-%m-%d')
+                amount = float(amount)
+                wallet = wallet[1:] if wallet.startswith('@') else wallet
+                # category and wallet
+                if category not in cats:
+                    category = Category(parent=self.get_parent(), name=category)
+                    category.put()
+                    cats[category.name] = category
+                else:
+                    category = cats[category]
+                if wallet not in ws:
+                    wallet = Wallet(parent=self.get_parent(), name=wallet)
+                    wallet.put()
+                    ws[wallet.name] = wallet
+                else:
+                    wallet = ws[wallet]
+
+                # Now add
+                Transaction(parent=self.get_parent(), date=date, amount=amount, category=category, wallet=wallet, description=description).put()
+
+        # done
