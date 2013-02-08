@@ -19,6 +19,7 @@ url_mappings = (
     webapp2.Route(r'/categories/<id:\d+>/delete/', handler=CategoryDeletePage, name='category-del'),
     webapp2.Route(r'/import/', handler=ImportPage, name='import'),
     webapp2.Route(r'/import/worker/', handler=ImportWorker, name='import-worker'),
+    webapp2.Route(r'/tools/flush/', handler=FlushDatabase, name='tools-flush'),
 )
 
 app = webapp2.WSGIApplication(url_mappings,  debug=True)

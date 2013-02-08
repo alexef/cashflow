@@ -203,3 +203,12 @@ class ImportWorker(MainHandler):
                 Transaction(parent=self.get_parent(), date=date, amount=amount, category=category, wallet=wallet, description=description).put()
 
         # done
+
+
+class FlushDatabase(MainHandler):
+    def get(self):
+        self.render_to_response('delete.html', {'object': None, 'delete_message': 'all transactions'})
+
+    def post(self):
+        db.delete(Transaction.all(keys_only=True).ancestor(self.get_parent()))
+        self.redirect(self.uri_for('home'))
