@@ -13,12 +13,16 @@ jinja_environment.globals.update(
 class BaseHandler(webapp2.RequestHandler):
     def render_to_response(self, template_name, context=None):
         template = jinja_environment.get_template(template_name)
+        context = context or {}
         self.response.out.write(template.render(context))
 
 
 class AuthenticatedBaseHandler(BaseHandler):
+    def get_current_user(self):
+        return users.get_current_user()
+
     def dispatch(self):
-        self.user = users.get_current_user()
+        self.user = self.get_current_user()
         if self.user is None:
             return self.redirect(users.create_login_url(self.request.uri))
         return super(AuthenticatedBaseHandler, self).dispatch()
