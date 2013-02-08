@@ -53,7 +53,7 @@ class WalletTransactions(MainHandler):
 class WalletTransactionAdd(MainHandler):
     def post(self, id):
         wallet = Wallet.get_by_id(int(id), parent=self.get_parent())
-        amount = int(self.request.get('amount'))
+        amount = float(self.request.get('amount'))
         category = self.request.get('category')
         description = self.request.get('description')
         category_object = Category.gql("WHERE name = :1", category).get()
@@ -77,7 +77,7 @@ class WalletsPage(MainHandler):
 
 class TransactionAdd(MainHandler):
     def post(self):
-        amount = int(self.request.get('amount'))
+        amount = float(self.request.get('amount'))
         category = self.request.get('category')
         wallet = self.request.get('wallet')
         description = self.request.get('description')
@@ -167,6 +167,8 @@ class ImportWorker(MainHandler):
 
     def post(self):
         url = self.request.get('url', None)
+        if not url:
+            return
         # cache cats and ws
         cats = {}
         ws = {}
