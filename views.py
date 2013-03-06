@@ -19,7 +19,10 @@ class MainHandler(AuthenticatedBaseHandler, ParentMixin):
 
 class HomeRedirect(MainHandler):
     def get(self):
-        wallet = Wallet.all().ancestor(self.get_parent()).order('name').get()
+        #wallet = Wallet.all().ancestor(self.get_parent()).order('name').get()
+        wallets = list(Wallet.all().ancestor(self.get_parent()))
+        wallets.sort(key=lambda w: w.name)
+        wallet = wallets[0]
         if wallet is None:
             self.redirect(self.uri_for('wallets'))
         else:
