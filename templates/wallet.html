@@ -37,7 +37,12 @@
 
     <fieldset>
         <legend>Transactions</legend>
-        <p>Interval: <span id="start">{{ interval.0 }}</span> - <span id="end">{{ interval.1 }}</span></p>
+        <p>Interval: <span id="start">{{ interval.0 }}</span> - <span id="end">{{ interval.1 }}</span>
+            <a class="btn" href="?start={{ nav.previous.start }}&end={{ nav.previous.end }}"><i class="icon-step-backward"></i></a>
+            <a class="btn" href="?start={{ nav.next.start }}&end={{ nav.next.end }}"><i class="icon-step-forward"></i></a>
+            <a class="btn" href="?start={{ nav.this.start }}">this month</a>
+            <a class="btn" href="?start={{ interval.0 }}">until today</a>
+        </p>
     </fieldset>
 
     <div class="tabbable"> <!-- Only required for left/right tabs -->

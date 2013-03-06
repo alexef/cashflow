@@ -56,12 +56,19 @@ class WalletTransactions(MainHandler):
             date_end = datetime.date(today.year, today.month, calendar.monthrange(today.year, today.month)[1])
         wallet = Wallet.get_by_id(int(id), parent=self.get_parent())
         transactions = wallet.transaction_set.filter('date >=', date_start).filter('date <=', date_end)
+        nav = {}
+        nav['previous'] = {'end': date_start - datetime.timedelta(days=1)}
+        nav['previous']['start'] = datetime.date(nav['previous']['end'].year, nav['previous']['end'].month, 1)
+        nav['next'] = {'start': date_end + datetime.timedelta(days=1)}
+        nav['next']['end'] = datetime.date(nav['next']['start'].year, nav['next']['start'].month, calendar.monthrange(nav['next']['start'].year, nav['next']['start'].month)[1])
+        nav['this'] = {'start': datetime.date(today.year, today.month, 1)}
         template_values = {'transactions': transactions,
                            'wallets': Wallet.all().ancestor(self.get_parent()),
                            'wallet': wallet,
                            'interval': (date_start, date_end),
                            'categories': Category.all().ancestor(self.get_parent()),
                            'balance': sum([t.amount for t in wallet.transaction_set]),
+                           'nav': nav,
         }
         self.render_to_response('wallet.html', template_values)
 
