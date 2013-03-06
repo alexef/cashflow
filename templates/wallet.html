@@ -37,7 +37,7 @@
 
     <fieldset>
         <legend>Transactions</legend>
-        <p>Interval: {{ interval.0 }} - {{ interval.1 }}</p>
+        <p>Interval: <span id="start">{{ interval.0 }}</span> - <span id="end">{{ interval.1 }}</span></p>
     </fieldset>
 
     <div class="tabbable"> <!-- Only required for left/right tabs -->
@@ -96,7 +96,8 @@
         $(function () {
             var chart_income, chart_outcome;
             $('#tab2-label').on('shown', function (e){
-                $.getJSON('/api/transactions/{{ wallet.id }}/')
+                var query = '?' + 'start=' + $('#start').html() + '&' + 'end=' + $('#end').html();
+                $.getJSON('/api/transactions/{{ wallet.id }}/' + query)
                         .done(function (data) {
                             $('#loading').hide();
                             chart_income.series[0].setData(data.income);
