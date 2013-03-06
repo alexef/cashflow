@@ -114,10 +114,10 @@
                         plotShadow: false
                     },
                     title: {
-                        text: ''
+                        text: 'Incoming'
                     },
                     tooltip: {
-                        pointFormat: '{series.name}: <b>{point.percentage}%</b>',
+                        pointFormat: '{series.name}: <b>{point.y}</b> {point.percentage}%',
                         percentageDecimals: 1
                     },
                     plotOptions: {
@@ -131,7 +131,8 @@
                                 formatter: function() {
                                     return '<b>'+ this.point.name +'</b>: '+ this.point.y + ' (' + this.percentage.toFixed(2) +'%)';
                                 }
-                            }
+                            },
+                            size: '45%'
                         }
                     },
                     series: [{
@@ -148,10 +149,10 @@
                         plotShadow: false
                     },
                     title: {
-                        text: ''
+                        text: 'Outgoing'
                     },
                     tooltip: {
-                        pointFormat: '{series.name}: <b>{point.percentage}%</b>',
+                        pointFormat: '{series.name}: <b>{point.y}</b> {point.percentage}%',
                         percentageDecimals: 1
                     },
                     plotOptions: {
@@ -163,9 +164,10 @@
                                 color: '#000000',
                                 connectorColor: '#000000',
                                 formatter: function() {
-                                    return '<b>'+ this.point.name +'</b>: '+ this.point.y + ' (' + this.percentage.toFixed(2) +'%)';
+                                    return '<b>'+ this.point.name +'</b>: '+ this.point.y;
                                 }
-                            }
+                            },
+                            size: '45%'
                         }
                     },
                     series: [{
