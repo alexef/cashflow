@@ -2,12 +2,13 @@ import jinja2
 import json
 import webapp2
 from google.appengine.api import users
+from models import get_current_user
 
 jinja_environment = jinja2.Environment()
 jinja_environment.globals.update(
     {'uri_for': webapp2.uri_for,
      'logout_url': users.create_logout_url('/'),
-     'user': users.get_current_user}
+     'user': get_current_user}
 )
 
 

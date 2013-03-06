@@ -31,6 +31,10 @@
                             <li><a href="{{ uri_for('import') }}">Import</a></li>
                             <li><a href="{{ uri_for('tools-flush') }}">Flush</a></li>
                             <li><a href="{{ uri_for('overview') }}">Overview</a></li>
+                            {% if user().profile.admin %}
+                            <li class="divider"></li>
+                            <li><a href="#">Admin</a></li>
+                            {% endif %}
                         </ul>
                     </li>
                 </ul>
