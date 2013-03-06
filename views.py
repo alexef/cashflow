@@ -3,7 +3,7 @@ import calendar
 import datetime
 from google.appengine.api import urlfetch, taskqueue
 from google.appengine.ext import db
-from models import Transaction, Wallet, Category, get_account_ancestor
+from models import Transaction, Wallet, Category, get_account_ancestor, User
 from base import AuthenticatedBaseHandler, ApiHandler
 from utils import UnicodeReader
 
@@ -277,3 +277,19 @@ class ApiTransactions(ParentMixin, ApiHandler):
         income.sort(key=lambda a:a[1])
         outcome.sort(key=lambda a:a[1], reverse=True)
         return {'income': income, 'outcome': outcome}
+
+
+# Cpanel
+class AdminHandler(MainHandler):
+    def get_current_user(self):
+        user = super(AdminHandler, self).get_current_user()
+        if user:
+            profile = User.get_from_auth(user)
+            if not profile.admin:
+                user = None
+        return user
+
+
+class AdminPage(AdminHandler):
+    def get(self):
+        return self.render_to_response('admin/users.html', {'users': User.all()})

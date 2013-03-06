@@ -23,6 +23,7 @@ url_mappings = (
     webapp2.Route(r'/import/worker/', handler=ImportWorker, name='import-worker'),
     webapp2.Route(r'/tools/flush/', handler=FlushDatabase, name='tools-flush'),
     webapp2.Route(r'/api/transactions/<id:\d+>/', handler=ApiTransactions, name='api-transactions'),
+    webapp2.Route(r'/admin/', handler=AdminPage, name='admin'),
 )
 
 app = webapp2.WSGIApplication(url_mappings,  debug=True)
