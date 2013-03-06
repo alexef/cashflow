@@ -34,30 +34,48 @@
         </fieldset>
     </form>
 
-    <h2>Transactions</h2>
-    <p>Interval: {{ interval.0 }} - {{ interval.1 }}</p>
-    <table class="table table-striped">
-        <thead>
-        <tr>
-            <th>Date</th>
-            <th>Amount</th>
-            <th>Category</th>
-            <th>Description</th>
-            <th></th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for t in transactions %}
-            <tr>
-                <td>{{ t.date.date() }}</td>
-                <td><span class="{% if t.amount < 0 %}text-error{% else %}text-success{% endif %}">{{ t.amount }}</span></td>
-                <td>{{ t.category.name }}</td>
-                <td>{{ t.description }}</td>
-                <td><a class="btn btn-mini btn-danger" href="{{ uri_for('transaction-del', id=t.id) }}"><i class="icon-trash"></i></a></td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+
+    <fieldset>
+        <legend>Transactions</legend>
+        <p>Interval: {{ interval.0 }} - {{ interval.1 }}</p>
+    </fieldset>
+
+    <div class="tabbable"> <!-- Only required for left/right tabs -->
+      <ul class="nav nav-tabs">
+        <li class="active"><a href="#tab1" data-toggle="tab">List</a></li>
+        <li><a href="#tab2" data-toggle="tab">Chart</a></li>
+      </ul>
+      <div class="tab-content">
+        <div class="tab-pane active" id="tab1">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Category</th>
+                    <th>Description</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for t in transactions %}
+                    <tr>
+                        <td>{{ t.date.date() }}</td>
+                        <td><span class="{% if t.amount < 0 %}text-error{% else %}text-success{% endif %}">{{ t.amount }}</span></td>
+                        <td>{{ t.category.name }}</td>
+                        <td>{{ t.description }}</td>
+                        <td><a class="btn btn-mini btn-danger" href="{{ uri_for('transaction-del', id=t.id) }}"><i class="icon-trash"></i></a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="tab-pane" id="tab2">
+          <p>Coming soon.</p>
+        </div>
+      </div>
+    </div>
+
 {% endblock %}
 
 {% block extrafooter %}
