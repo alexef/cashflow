@@ -256,4 +256,8 @@ class ApiTransactions(ParentMixin, ApiHandler):
                 categories_plus[t.category.name] = categories_plus.get(t.category.name, 0) + t.amount
             else:
                 categories_mins[t.category.name] = categories_mins.get(t.category.name, 0) + t.amount
-        return {'income': [(k, v) for k, v in categories_plus.iteritems()], 'outcome': [(k, v) for k, v in categories_mins.iteritems()]}
+        income = [(k, v) for k, v in categories_plus.iteritems()]
+        outcome = [(k, v) for k, v in categories_mins.iteritems()]
+        income.sort(key=lambda a:a[1])
+        outcome.sort(key=lambda a:a[1], reverse=True)
+        return {'income': income, 'outcome': outcome}
