@@ -22,11 +22,10 @@ class HomeRedirect(MainHandler):
         #wallet = Wallet.all().ancestor(self.get_parent()).order('name').get()
         wallets = list(Wallet.all().ancestor(self.get_parent()))
         wallets.sort(key=lambda w: w.name)
-        wallet = wallets[0]
-        if wallet is None:
+        if not wallets:
             self.redirect(self.uri_for('wallets'))
         else:
-            self.redirect(self.uri_for('wallet', id=wallet.id))
+            self.redirect(self.uri_for('wallet', id=wallets[0].id))
 
 
 class MainPage(MainHandler):
