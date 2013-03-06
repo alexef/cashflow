@@ -1,4 +1,5 @@
 import jinja2
+import json
 import webapp2
 from google.appengine.api import users
 
@@ -26,3 +27,10 @@ class AuthenticatedBaseHandler(BaseHandler):
         if self.user is None:
             return self.redirect(users.create_login_url(self.request.uri))
         return super(AuthenticatedBaseHandler, self).dispatch()
+
+
+class ApiHandler(AuthenticatedBaseHandler):
+    def dispatch(self):
+        result = super(ApiHandler, self).dispatch()
+        if isinstance(result, (list, dict)):
+            self.response.out.write(json.dumps(result))

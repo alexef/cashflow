@@ -4,13 +4,17 @@ import datetime
 from google.appengine.api import urlfetch, taskqueue
 from google.appengine.ext import db
 from models import Transaction, Wallet, Category, get_account_ancestor
-from base import AuthenticatedBaseHandler
+from base import AuthenticatedBaseHandler, ApiHandler
 from utils import UnicodeReader
 
 
-class MainHandler(AuthenticatedBaseHandler):
+class ParentMixin(object):
     def get_parent(self):
         return get_account_ancestor(self.user)
+
+
+class MainHandler(AuthenticatedBaseHandler, ParentMixin):
+    pass
 
 
 class HomeRedirect(MainHandler):
@@ -223,3 +227,30 @@ class FlushDatabase(MainHandler):
     def post(self):
         db.delete(Transaction.all(keys_only=True).ancestor(self.get_parent()))
         self.redirect(self.uri_for('home'))
+
+
+# Api views
+class ApiTransactions(ParentMixin, ApiHandler):
+    def get(self, id):
+        today = datetime.date.today()
+        date_start = self.request.GET.get('start', None)
+        if date_start:
+            date_start = datetime.datetime.strptime(date_start, '%Y-%m-%d').date()
+        else:
+            date_start = datetime.date(today.year, today.month, 1)
+        date_end = self.request.GET.get('end', None)
+        if date_end:
+            date_end = datetime.datetime.strptime(date_end, '%Y-%m-%d').date()
+        else:
+            date_end = datetime.date(today.year, today.month, calendar.monthrange(today.year, today.month)[1])
+        wallet = Wallet.get_by_id(int(id), parent=self.get_parent())
+        transactions = wallet.transaction_set.filter('date >=', date_start).filter('date <=', date_end)
+        # Group by categories
+        categories_plus = {}
+        categories_mins = {}
+        for t in transactions:
+            if t.amount > 0:
+                categories_plus[t.category.name] = categories_plus.get(t.category.name, 0) + t.amount
+            else:
+                categories_mins[t.category.name] = categories_mins.get(t.category.name, 0) + t.amount
+        return {'income': [(k, v) for k, v in categories_plus.iteritems()], 'outcome': [(k, v) for k, v in categories_mins.iteritems()]}
