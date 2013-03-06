@@ -19,8 +19,8 @@ class MainHandler(AuthenticatedBaseHandler, ParentMixin):
 
 class HomeRedirect(MainHandler):
     def get(self):
-        #wallet = Wallet.all().ancestor(self.get_parent()).order('name').get()
-        wallets = list(Wallet.all().ancestor(self.get_parent()))
+        #wallet = Wallet.all().ancestor(self.get_parent()).order('name').get() # not good, index
+        wallets = list(Wallet.all().ancestor(self.get_parent()).filter('active', True))
         wallets.sort(key=lambda w: w.name)
         if not wallets:
             self.redirect(self.uri_for('wallets'))
@@ -41,6 +41,8 @@ class MainPage(MainHandler):
 
 
 class WalletTransactions(MainHandler):
+    """ Main view for  a wallet
+    """
     def get(self, id):
         today = datetime.date.today()
         date_start = self.request.GET.get('start', None)
@@ -62,7 +64,7 @@ class WalletTransactions(MainHandler):
         nav['next']['end'] = datetime.date(nav['next']['start'].year, nav['next']['start'].month, calendar.monthrange(nav['next']['start'].year, nav['next']['start'].month)[1])
         nav['this'] = {'start': datetime.date(today.year, today.month, 1)}
         template_values = {'transactions': transactions,
-                           'wallets': Wallet.all().ancestor(self.get_parent()),
+                           'wallets': Wallet.all().ancestor(self.get_parent()).filter('active', True),
                            'wallet': wallet,
                            'interval': (date_start, date_end),
                            'categories': Category.all().ancestor(self.get_parent()),
@@ -83,6 +85,14 @@ class WalletTransactionAdd(MainHandler):
             wallet=wallet, parent=self.get_parent())
         transaction.put()
         self.redirect(self.uri_for('wallet', id=wallet.id))
+
+
+class WalletActiveToggle(MainHandler):
+    def get(self, id):
+        wallet = Wallet.get_by_id(int(id), parent=self.get_parent())
+        wallet.active = not wallet.active
+        wallet.save()
+        self.redirect(self.uri_for('wallets'))
 
 
 class WalletsPage(MainHandler):

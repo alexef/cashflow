@@ -13,13 +13,16 @@
         <thead>
         <tr>
             <th>Name</th>
+            <th>Active</th>
         </tr>
         </thead>
         <tbody>
         {% for w in wallets %}
         <tr>
             <td>{{ w.name }}</td>
+            <td>{{ w.active }}</td>
             <td><a class="btn btn-mini" href="{{ uri_for('wallet', id=w.id) }}"><i class="icon-th-list"></i> view</a></td>
+            <td><a class="btn btn-mini" href="{{ uri_for('wallet-toggle-active', id=w.id) }}"><i class="icon-book"></i> toggle active</a></td>
         </tr>
         {% endfor %}
         </tbody>

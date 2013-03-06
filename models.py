@@ -9,6 +9,7 @@ class BaseModel(db.Model):
 
 class Wallet(BaseModel):
     name = db.StringProperty()
+    active = db.BooleanProperty(default=True)
 
 
 class Category(BaseModel):
